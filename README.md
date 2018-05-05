@@ -9,5 +9,5 @@ execuções.
 ```./mvnw test```
 
 ### Documentação
-Para ver a documentação da API, acesse:
+Para ver a documentação da API, acesse este endereço após iniciar a aplicação:
 [http://localhost:8080/swagger-ui.html]()
