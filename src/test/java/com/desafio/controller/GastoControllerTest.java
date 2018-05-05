@@ -1,7 +1,7 @@
 package com.desafio.controller;
 
 import com.desafio.model.Gasto;
-import com.desafio.repository.GastoRepository;
+import com.desafio.service.GastoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Optional;
+import java.util.DoubleSummaryStatistics;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasSize;
@@ -38,7 +40,7 @@ public class GastoControllerTest {
     private ObjectMapper mapper;
 
     @MockBean
-    private GastoRepository gastoRepository;
+    private GastoService gastoService;
 
     @Test
     public void buscaTodosGastos() throws Exception {
@@ -46,7 +48,7 @@ public class GastoControllerTest {
         gasto.setCategoria("transporte");
         gasto.setValor(112.45);
 
-        when(gastoRepository.findAll()).thenReturn(singletonList(gasto));
+        when(gastoService.buscaTodosGastos()).thenReturn(singletonList(gasto));
 
         mvc.perform(get("/api/gastos").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -61,7 +63,7 @@ public class GastoControllerTest {
         gasto.setValor(112.45);
 
         String json = mapper.writeValueAsString(gasto);
-        when(gastoRepository.save(any(Gasto.class))).thenReturn(gasto);
+        when(gastoService.criaGasto(any(Gasto.class))).thenReturn(gasto);
 
         mvc.perform(post("/api/gastos").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +78,7 @@ public class GastoControllerTest {
         gasto.setCategoria("transporte");
         gasto.setValor(112.45);
 
-        when(gastoRepository.findById(anyLong())).thenReturn(Optional.of(gasto));
+        when(gastoService.buscaGastoPorId(anyLong())).thenReturn(gasto);
 
         mvc.perform(get("/api/gastos/1").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -95,8 +97,7 @@ public class GastoControllerTest {
 
         String json = mapper.writeValueAsString(newGasto);
 
-        when(gastoRepository.findById(anyLong())).thenReturn(Optional.of(oldGasto));
-        when(gastoRepository.save(any(Gasto.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(gastoService.atualizaGasto(anyLong(), any(Gasto.class))).thenReturn(newGasto);
 
         mvc.perform(put("/api/gastos/1")
                 .accept(MediaType.APPLICATION_JSON)
@@ -112,8 +113,7 @@ public class GastoControllerTest {
         gasto.setCategoria("alimentação");
         gasto.setValor(50.45);
 
-        when(gastoRepository.findById(anyLong())).thenReturn(Optional.of(gasto));
-        doNothing().when(gastoRepository).delete(any(Gasto.class));
+        doNothing().when(gastoService).deletaGasto(anyLong());
 
         mvc.perform(delete("/api/gastos/1")
                 .accept(MediaType.APPLICATION_JSON))
@@ -126,7 +126,13 @@ public class GastoControllerTest {
         gasto.setCategoria("transporte");
         gasto.setValor(50.45);
 
-        when(gastoRepository.findAll()).thenReturn(singletonList(gasto));
+        DoubleSummaryStatistics resumo = new DoubleSummaryStatistics();
+        resumo.accept(gasto.getValor());
+
+        Map<String, DoubleSummaryStatistics> map = new HashMap<>();
+        map.put("transporte", resumo);
+
+        when(gastoService.resumeGastosPorCategoria()).thenReturn(map);
 
         mvc.perform(get("/api/gastos/resumo")
                 .accept(MediaType.APPLICATION_JSON))

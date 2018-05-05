@@ -1,8 +1,7 @@
 package com.desafio.controller;
 
-import com.desafio.exception.ResourceNotFoundException;
 import com.desafio.model.Gasto;
-import com.desafio.repository.GastoRepository;
+import com.desafio.service.GastoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,63 +11,46 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summarizingDouble;
-
 @RestController
 @RequestMapping("/api")
 public class GastoController {
 
-    private final GastoRepository gastoRepository;
+    private final GastoService gastoService;
 
     @Autowired
-    public GastoController(GastoRepository gastoRepository) {
-        this.gastoRepository = gastoRepository;
+    public GastoController(GastoService gastoService) {
+        this.gastoService = gastoService;
     }
 
     @GetMapping("/gastos")
     public List<Gasto> buscaTodosGastos() {
-        return gastoRepository.findAll();
+        return gastoService.buscaTodosGastos();
     }
 
     @PostMapping("/gastos")
     public Gasto criaGasto(@Valid @RequestBody Gasto gasto) {
-        return gastoRepository.save(gasto);
+        return gastoService.criaGasto(gasto);
     }
 
     @GetMapping("/gastos/{id}")
     public Gasto buscaGastoPorId(@PathVariable(value = "id") Long gastoId) {
-        return gastoRepository.findById(gastoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto", "id", gastoId));
+        return gastoService.buscaGastoPorId(gastoId);
     }
 
     @PutMapping("/gastos/{id}")
     public Gasto atualizaGasto(@PathVariable(value = "id") Long gastoId,
                                @Valid @RequestBody Gasto novoGasto) {
-
-        Gasto gasto = gastoRepository.findById(gastoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto", "id", gastoId));
-
-        gasto.setValor(novoGasto.getValor());
-        gasto.setCategoria(novoGasto.getCategoria());
-
-        return gastoRepository.save(gasto);
+        return gastoService.atualizaGasto(gastoId, novoGasto);
     }
 
     @DeleteMapping("/gastos/{id}")
     public ResponseEntity<?> deletaGasto(@PathVariable(value = "id") Long gastoId) {
-        Gasto gasto = gastoRepository.findById(gastoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto", "id", gastoId));
-
-        gastoRepository.delete(gasto);
+        this.gastoService.deletaGasto(gastoId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/gastos/resumo")
     public Map<String, DoubleSummaryStatistics> resumeGastosPorCategoria() {
-        return gastoRepository
-                .findAll()
-                .stream()
-                .collect(groupingBy(Gasto::getCategoria, summarizingDouble(Gasto::getValor)));
+        return this.gastoService.resumeGastosPorCategoria();
     }
 }
