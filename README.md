@@ -7,3 +7,7 @@ execuções.
 
 ### Rodando os testes
 ```./mvnw test```
+
+### Documentação
+Para ver a documentação da API, acesse:
+[http://localhost:8080/swagger-ui.html]()
