@@ -1,4 +1,4 @@
-##API de gastos
+## API de gastos
 
 A API desenvolvida permite cadastrar gastos associados a uma categoria
 e consultar um resumo dos seus gastos.
