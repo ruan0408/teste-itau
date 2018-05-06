@@ -1,7 +1,7 @@
-package com.desafio.service;
+package testeitau.service;
 
-import com.desafio.model.Gasto;
-import com.desafio.repository.GastoRepository;
+import testeitau.model.Gasto;
+import testeitau.repository.GastoRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

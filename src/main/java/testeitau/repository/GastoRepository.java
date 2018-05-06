@@ -1,6 +1,6 @@
-package com.desafio.repository;
+package testeitau.repository;
 
-import com.desafio.model.Gasto;
+import testeitau.model.Gasto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

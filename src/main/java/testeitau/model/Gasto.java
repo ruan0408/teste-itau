@@ -1,4 +1,4 @@
-package com.desafio.model;
+package testeitau.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.CreatedDate;

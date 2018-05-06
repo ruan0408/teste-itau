@@ -1,7 +1,7 @@
-package com.desafio.controller;
+package testeitau.controller;
 
-import com.desafio.model.Gasto;
-import com.desafio.service.GastoService;
+import testeitau.model.Gasto;
+import testeitau.service.GastoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
